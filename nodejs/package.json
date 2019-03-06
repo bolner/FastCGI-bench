@@ -1,0 +1,12 @@
+{
+    "name": "fcgibench-nodejs",
+    "version": "1.0.0",
+    "author": "bolner@outlook.com",
+    "dependencies": {
+        "node-fastcgi": "^1.3.3"
+    },
+    "scripts": {
+        "start": "node ."
+    },
+    "main": "./index"
+}

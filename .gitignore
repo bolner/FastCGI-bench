@@ -1,0 +1,3 @@
+*.exe
+*.dll
+nodejs/node_modules
