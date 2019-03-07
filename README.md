@@ -4,6 +4,10 @@ This project provides an automated way to setup a test environment for comparing
 
 *Note: Currently the C# setup doesn't seem to be fully supporting parallel execution, because it hangs if the concurrency is more than 4. I will search for a fully async library.*
 
+FastCGI libraries used:
+- NodeJS: https://github.com/fbbdev/node-fastcgi
+- C#: https://github.com/LukasBoersma/FastCGI
+
 ## Installation
 
 - Create the docker image:
