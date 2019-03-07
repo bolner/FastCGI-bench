@@ -11,7 +11,7 @@ su fcgibench -c "node /var/fcgibench/nodejs/index.js 8082 &"
 su fcgibench -c "node /var/fcgibench/nodejs/index.js 8083 &"
 
 ##########################################################################
-# NodeJS
+# C#
 ##########################################################################
 su fcgibench -c "mono /var/fcgibench/csharp/fcgi.exe 9090 &"
 su fcgibench -c "mono /var/fcgibench/csharp/fcgi.exe 9091 &"

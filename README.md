@@ -44,7 +44,7 @@ FastCGI libraries used:
         www-data    98    89  0 00:17 ?        00:00:00     nginx: worker process
         www-data    99    89  0 00:17 ?        00:00:00     nginx: worker process
 
-Nginx config
+### Nginx config
 
         upstream fastcgi_backend_nodejs {
                 server 127.0.0.1:8080;
@@ -91,7 +91,24 @@ Nginx config
 The measuring is done with the Apache Benchmark tool.
 
         docker/login.sh
-        ab -c 350 -n 20000 127.0.0.1/nodejs
-        ab -c 350 -n 20000 127.0.0.1/csharp
+        ab -c 400 -n 200000 127.0.0.1/nodejs
+        ab -c 400 -n 200000 127.0.0.1/csharp
 
 (Outside the docker you have to use the port, which was passed to the `create_container.sh` script.)
+
+### NodeJS results
+
+        Concurrency Level:      400
+        Time taken for tests:   9.561 seconds
+        Complete requests:      200000
+        Failed requests:        0
+        Total transferred:      28800000 bytes
+        HTML transferred:       2400000 bytes
+        Requests per second:    20918.01 [#/sec] (mean)
+        Time per request:       19.122 [ms] (mean)
+        Time per request:       0.048 [ms] (mean, across all concurrent requests)
+        Transfer rate:          2941.60 [Kbytes/sec] received
+
+### C# results
+
+No suitable async library found yet.
