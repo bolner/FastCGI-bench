@@ -8,7 +8,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
 apt-get -y --no-install-recommends install dbus apt-utils locales tzdata \
     curl gnupg gcc g++ make wget apt-transport-https build-essential \
-    ca-certificates libssl-dev net-tools zip unzip
+    ca-certificates libssl-dev net-tools zip unzip software-properties-common
 
 service dbus start
 
@@ -63,3 +63,8 @@ apt-get install -y --no-install-recommends mono-devel ca-certificates-mono nuget
 su fcgibench -c "cd /var/fcgibench/csharp; nuget install FastCGI; cp FastCGI.*/lib/net*/FastCGI.dll ./"
 rm -r /var/fcgibench/csharp/*/
 su fcgibench -c "cd /var/fcgibench/csharp; mcs -out:fcgi.exe -r:FastCGI.dll main.cs"
+
+add-apt-repository universe
+apt-get install apt-transport-https
+apt-get update
+apt-get install dotnet-sdk-2.2
