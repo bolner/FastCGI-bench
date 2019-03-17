@@ -7,7 +7,7 @@ export DEBIAN_FRONTEND=noninteractive
 ##########################################################################
 apt-get update -y
 apt-get -y --no-install-recommends install dbus apt-utils locales tzdata \
-    curl gnupg gcc g++ make wget apt-transport-https build-essential \
+    curl gnupg gcc g++ make wget apt-transport-https build-essential nano \
     ca-certificates libssl-dev net-tools zip unzip software-properties-common
 
 service dbus start
