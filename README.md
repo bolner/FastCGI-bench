@@ -12,9 +12,11 @@ These are the tested FastCGI libraries:
 
 ## Benchmark results
 
-The ApacheBench tool was used to measure the performance. As you can see, the non-async library fails during higher concurrency.
+The ApacheBench tool was used to measure the performance. As you can see, the non-async library fails during higher concurrency. All tests were run 10 times, and the best one (req/sec) was selected.
 
 ### Concurrency: **20** simultanous connections / 20'000 requests
+
+        ab -c 20 -n 20000 127.0.0.1/PATH
 
 | Library          | Req. /sec | Req. Time | Conc. R.T. | Longest R. | Failed |
 |------------------|-----------|-----------|------------|------------|--------|
@@ -25,6 +27,8 @@ The ApacheBench tool was used to measure the performance. As you can see, the no
 *Req. Time: mean | Conc. R.T.: mean, across all concurrent requests*
 
 ### Concurrency: **400** simultaneous connections / 200'000 requests
+
+        ab -c 400 -n 200000 127.0.0.1/PATH
 
 | Library          | Req. /sec | Req. Time | Conc. R.T. | Longest R. | Failed |
 |------------------|-----------|-----------|------------|------------|--------|
