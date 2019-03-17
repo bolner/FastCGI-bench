@@ -110,30 +110,3 @@ A docker file is provided for setting up the test environment for comparing the 
                         fastcgi_pass fastcgi_backend_lbfastcgi;
                 }
         }
-
-## Benchmark
-
-The measuring is done with the Apache Benchmark tool.
-
-        docker/login.sh
-        ab -c 400 -n 200000 127.0.0.1/nodejs
-        ab -c 400 -n 200000 127.0.0.1/csharp
-
-(Outside the docker you have to use the port, which was passed to the `create_container.sh` script.)
-
-### NodeJS results
-
-        Concurrency Level:      400
-        Time taken for tests:   9.561 seconds
-        Complete requests:      200000
-        Failed requests:        0
-        Total transferred:      28800000 bytes
-        HTML transferred:       2400000 bytes
-        Requests per second:    20918.01 [#/sec] (mean)
-        Time per request:       19.122 [ms] (mean)
-        Time per request:       0.048 [ms] (mean, across all concurrent requests)
-        Transfer rate:          2941.60 [Kbytes/sec] received
-
-### C# results
-
-No suitable async library found yet.
