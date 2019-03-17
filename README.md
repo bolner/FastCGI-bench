@@ -1,14 +1,46 @@
-# FastCGI-Bench - NodeJS vs C#
+# FastCGI-Bench - NodeJS vs .NET Core
 
-This project provides an automated way to setup a test environment for comparing the performances of a NodeJS and a C# fastCGI client.
+The goal of this project to demonstrate that a `.NET Core` web application can reach the performance of a `NodeJS` one, if it uses only async techniques for handling input/output. Since I was unable to find a fully async FastCGI client library for .NET Core, I've developed one: [AsyncFastCGI.NET](https://github.com/bolner/AsyncFastCGI.NET).
 
-*Note: Currently the C# setup doesn't seem to be fully supporting parallel execution, because it hangs if the concurrency is more than 4. I will search for a fully async library.*
+These are the tested FastCGI libraries:
 
-FastCGI libraries used:
-- NodeJS: https://github.com/fbbdev/node-fastcgi
-- C#: https://github.com/LukasBoersma/FastCGI
+| Project name | Github page | Framework | Language |
+| --- | --- | --- | --- |
+| AsyncFastCGI&period;NET | https://github.com/bolner/AsyncFastCGI.NET | .NET Core | C# |
+| node-fastcgi | https://github.com/fbbdev/node-fastcgi| NodeJS | Javascript |
+| LukasBoersma/FastCGI | https://github.com/LukasBoersma/FastCGI | .NET Core | C# |
+
+## Benchmark results
+
+The ApacheBench tool was used to measure the performance. As you can see, the non-async library fails during higher concurrency.
+
+### Concurrency: **20** simultanous connections / 20'000 requests
+
+| Library          | Req. /sec | Req. Time | Conc. R.T. | Longest R. | Failed |
+|------------------|-----------|-----------|------------|------------|--------|
+| AsyncFastCGI.NET | 19494.64  | 1.026 ms  | 0.051 ms   | 18 ms      | 0      |
+| NodeJS           | 19453.72  | 1.028 ms  | 0.051 ms   | 13 ms      | 0      |
+| LB FastCGI       | 4249.07   | 4.707     | 0.235      | 3040 ms    | 0      |
+
+*Req. Time: mean | Conc. R.T.: mean, across all concurrent requests*
+
+### Concurrency: **400** simultanous connections / 200'000 requests
+
+| Library          | Req. /sec | Req. Time | Conc. R.T. | Longest R. | Failed |
+|------------------|-----------|-----------|------------|------------|--------|
+| AsyncFastCGI.NET | 19893.88  | 20.107 ms | 0.050 ms   | 2044 ms    | 0      |
+| NodeJS           | 21411.16  | 18.682 ms | 0.047 ms   | 1062 ms    | 0      |
+| LB FastCGI       | fails     | fails     | fails      | fails      | fails  |
+
+*Req. Time: mean | Conc. R.T.: mean, across all concurrent requests*
+
+Conclusions:
+- The `.NET Core` applications can compete with the `NodeJS` ones regarding performance of I/O operations.
+- Using FastCGI clients can be an alternative to the traditional ways of implementing web applications for `.NET`, which force too many constraints on the developers. The later being the biggest reason for their unpopularity.
 
 ## Installation
+
+A docker file is provided for setting up the test environment for comparing the performances of `NodeJS` and `.NET Core` FastCGI clients, using an Nginx webserver.
 
 - Create the docker image:
 
@@ -21,47 +53,32 @@ FastCGI libraries used:
 - Log in into the docker container:
 
         docker/login.sh
+        or
+        docker/root_login.sh
 
-## The setup
+## Nginx config
 
-4 NodeJS and 4 C# processes accept FastCGI request on different ports.
+4 NodeJS and 2x4 C# processes accept FastCGI request on different ports.
 
-        fcgiben+    21     1  1 00:17 ?        00:00:00   node /var/fcgibench/nodejs/index.js 8080
-        fcgiben+    29     1  1 00:17 ?        00:00:00   node /var/fcgibench/nodejs/index.js 8081
-        fcgiben+    38     1  1 00:17 ?        00:00:00   node /var/fcgibench/nodejs/index.js 8082
-        fcgiben+    47     1  1 00:17 ?        00:00:00   node /var/fcgibench/nodejs/index.js 8083
-        fcgiben+    56     1  5 00:17 ?        00:00:00   mono /var/fcgibench/csharp/fcgi.exe 9090
-        fcgiben+    62     1  5 00:17 ?        00:00:00   mono /var/fcgibench/csharp/fcgi.exe 9091
-        fcgiben+    67     1  5 00:17 ?        00:00:00   mono /var/fcgibench/csharp/fcgi.exe 9092
-        fcgiben+    71     1  5 00:17 ?        00:00:00   mono /var/fcgibench/csharp/fcgi.exe 9093
-        root        89     1  0 00:17 ?        00:00:00   nginx: master process /usr/sbin/nginx
-        www-data    91    89  0 00:17 ?        00:00:00     nginx: worker process
-        www-data    92    89  0 00:17 ?        00:00:00     nginx: worker process
-        www-data    94    89  0 00:17 ?        00:00:00     nginx: worker process
-        www-data    95    89  0 00:17 ?        00:00:00     nginx: worker process
-        www-data    96    89  0 00:17 ?        00:00:00     nginx: worker process
-        www-data    97    89  0 00:17 ?        00:00:00     nginx: worker process
-        www-data    98    89  0 00:17 ?        00:00:00     nginx: worker process
-        www-data    99    89  0 00:17 ?        00:00:00     nginx: worker process
-
-### Nginx config
-
-        upstream fastcgi_backend_nodejs {
+        upstream fastcgi_backend_asyncfcgi {
                 server 127.0.0.1:8080;
                 server 127.0.0.1:8081;
                 server 127.0.0.1:8082;
                 server 127.0.0.1:8083;
-
-                keepalive 8;
         }
 
-        upstream fastcgi_backend_csharp {
+        upstream fastcgi_backend_nodejs {
+                server 127.0.0.1:7070;
+                server 127.0.0.1:7071;
+                server 127.0.0.1:7072;
+                server 127.0.0.1:7073;
+        }
+
+        upstream fastcgi_backend_lbfastcgi {
                 server 127.0.0.1:9090;
                 server 127.0.0.1:9091;
                 server 127.0.0.1:9092;
                 server 127.0.0.1:9093;
-
-                keepalive 8;
         }
 
         server {
@@ -75,14 +92,22 @@ FastCGI libraries used:
                         try_files $uri $uri/ =404;
                 }
 
+                fastcgi_keep_conn off;
+        fastcgi_request_buffering off;
+
+                location /asyncfastcgi {
+                        include /etc/nginx/fastcgi_params;
+                        fastcgi_pass fastcgi_backend_asyncfcgi;
+                }
+
                 location /nodejs {
                         include /etc/nginx/fastcgi_params;
                         fastcgi_pass fastcgi_backend_nodejs;
                 }
 
-                location /csharp {
+                location /lbfastcgi {
                         include /etc/nginx/fastcgi_params;
-                        fastcgi_pass fastcgi_backend_csharp;
+                        fastcgi_pass fastcgi_backend_lbfastcgi;
                 }
         }
 

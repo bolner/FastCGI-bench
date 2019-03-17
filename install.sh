@@ -6,8 +6,8 @@ export DEBIAN_FRONTEND=noninteractive
 # Docker image requirements
 ##########################################################################
 apt-get update -y
-apt-get -y --no-install-recommends install dbus apt-utils locales tzdata \
-    curl gnupg gcc g++ make wget apt-transport-https build-essential nano \
+apt-get -y --no-install-recommends install dbus apt-utils locales tzdata git \
+    curl gnupg gcc g++ make wget apt-transport-https build-essential nano psmisc \
     ca-certificates libssl-dev net-tools zip unzip software-properties-common
 
 service dbus start
@@ -39,7 +39,7 @@ useradd fcgibench -s /bin/bash -m -g fcgibench -G fcgibench
 chown -R fcgibench:fcgibench /var/fcgibench/
 
 ##########################################################################
-# nginx
+# Nginx
 ##########################################################################
 apt-get install -y --no-install-recommends nginx apache2-utils
 service nginx stop
@@ -50,21 +50,26 @@ cp -f /var/fcgibench/nginx/default.conf /etc/nginx/sites-available/default
 ##########################################################################
 curl -sL https://deb.nodesource.com/setup_11.x | bash -
 apt-get install -y --no-install-recommends nodejs
-su fcgibench -c "cd /var/fcgibench/nodejs; npm install"
+su fcgibench -c "cd /var/fcgibench/NodeJS; npm install"
 
 ##########################################################################
-# Mono
+# .NET Core
 ##########################################################################
-apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-echo "deb https://download.mono-project.com/repo/ubuntu stable-bionic main" \
-    | tee /etc/apt/sources.list.d/mono-official-stable.list
-apt-get update -y
-apt-get install -y --no-install-recommends mono-devel ca-certificates-mono nuget
-su fcgibench -c "cd /var/fcgibench/csharp; nuget install FastCGI; cp FastCGI.*/lib/net*/FastCGI.dll ./"
-rm -r /var/fcgibench/csharp/*/
-su fcgibench -c "cd /var/fcgibench/csharp; mcs -out:fcgi.exe -r:FastCGI.dll main.cs"
+
+wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+dpkg -i packages-microsoft-prod.deb
 
 add-apt-repository universe
-apt-get install apt-transport-https
+apt-get install -y --no-install-recommends apt-transport-https
 apt-get update
-apt-get install dotnet-sdk-2.2
+apt-get install -y --no-install-recommends dotnet-sdk-2.2 nuget
+
+rm -f packages-microsoft-prod.deb
+
+# FbFastCGI
+su fcgibench -c "cd /var/fcgibench/LbFastCGI; dotnet publish -c Release -r ubuntu.18.04-x64"
+
+# AsyncFastCGI.NET (no NuGet yet)
+su fcgibench -c "cd /var/fcgibench/AsyncFastCGI; mkdir git; cd git; git clone 'https://github.com/bolner/AsyncFastCGI.NET.git' ./"
+su fcgibench -c "cd /var/fcgibench/AsyncFastCGI; rm -fr lib 2>/dev/null; mv git/lib ./; rm -fr git"
+su fcgibench -c "cd /var/fcgibench/AsyncFastCGI; dotnet publish -c Release -r ubuntu.18.04-x64"

@@ -1,5 +1,8 @@
-*.exe
-*.dll
-nodejs/node_modules
+node_modules
+bin
+obj
 .vscode
+core
 AsyncFastCGI.NET
+AsyncFastCGI/lib
+test

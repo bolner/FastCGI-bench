@@ -26,7 +26,7 @@ namespace FastCGI.Demo
                       "HTTP/1.1 200 OK\n"
                     + "Content-Type:text/html\n"
                     + "\n"
-                    + "Hello World!";
+                    + "<!DOCTYPE html><html><body><h1>Hello World!</h1></body></html>";
 
                 request.WriteResponseASCII(responseString);
                 request.Close();
