@@ -24,7 +24,7 @@ The ApacheBench tool was used to measure the performance. As you can see, the no
 
 *Req. Time: mean | Conc. R.T.: mean, across all concurrent requests*
 
-### Concurrency: **400** simultanous connections / 200'000 requests
+### Concurrency: **400** simultaneous connections / 200'000 requests
 
 | Library          | Req. /sec | Req. Time | Conc. R.T. | Longest R. | Failed |
 |------------------|-----------|-----------|------------|------------|--------|
@@ -93,7 +93,7 @@ A docker file is provided for setting up the test environment for comparing the 
                 }
 
                 fastcgi_keep_conn off;
-        fastcgi_request_buffering off;
+                fastcgi_request_buffering off;
 
                 location /asyncfastcgi {
                         include /etc/nginx/fastcgi_params;
