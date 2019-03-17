@@ -1,6 +1,6 @@
 # FastCGI-Bench - NodeJS vs .NET Core
 
-The goal of this project to demonstrate that a `.NET Core` web application can reach the performance of a `NodeJS` one, if it uses only async techniques for handling input/output. Since I was unable to find a fully async FastCGI client library for .NET Core, I've developed one: [AsyncFastCGI.NET](https://github.com/bolner/AsyncFastCGI.NET).
+The goal of this project is to demonstrate that a `.NET Core` web application can reach the performance of a `NodeJS` one if it uses only async techniques for handling input/output. Since I was unable to find a fully async FastCGI client library for .NET Core, I've developed one: [AsyncFastCGI.NET](https://github.com/bolner/AsyncFastCGI.NET).
 
 These are the tested FastCGI libraries:
 
